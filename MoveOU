@@ -1,0 +1,16 @@
+$root=[ADSI]''
+$Desktop  = ${env:ComputerName}+'$'
+Write-Host "SAM Account Name  " $Desktop
+$searcher = New-Object System.DirectoryServices.DirectorySearcher($root)
+$searcher.filter="(&(objectClass=computer)(sAMAccountName=" + $Desktop + "))"
+Write-Host "Search Filter " $searcher.filter
+$Desktops=$searcher.findall()
+$DesktopDN=$Desktops[0].properties.item("distinguishedname")
+Write-Host "Desktop DN" $DesktopDN
+$DestOUDN = "LDAP://OU=Windows10,OU=Workstations,DC=SH,DC=LOC"
+Write-Host "Destination OU "  $DestOUDN
+$DestOU = [adsi]($DestOUDN)
+$serv=[adsi]"LDAP://$DesktopDN"
+$serv.psbase.MoveTo($DestOU)
+
+
