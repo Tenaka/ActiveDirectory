@@ -1,0 +1,9 @@
+#Resets SmartcardLogonRequire attribute - forces change of password to 120 random chars
+$scTrue = Get-ADUser -Filter * -Properties * | where {$_.SmartcardLogonRequired -eq "True"} | Select-Object name,SmartcardLogonRequired
+
+foreach ($user in $scTrue)
+    {
+        $name = $user.name
+        Set-ADUser -Identity $name -SmartcardLogonRequired:$false
+        Set-ADUser -Identity $name -SmartcardLogonRequired:$true
+    }
